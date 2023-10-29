@@ -2,7 +2,7 @@
 
 A repository to practice RNASeq exercises using Gitpod
 
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/mahesh-panchal/rnaseq-exercises/)
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/amrei-bp/rnaseq-exercises/)
 
 The [Gitpod](https://www.gitpod.io/) environment comes installed with:
 - Development tools:
