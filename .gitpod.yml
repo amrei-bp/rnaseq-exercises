@@ -5,7 +5,8 @@ image: nfcore/gitpod:latest
 tasks:
   - name: Install RNAseq tools
     command: |
-      mamba --version
+      mamba install -y fastqc trimmomatic sortmerna multiqc
+      mamba clean -y -a
 
 # Add vscode extensions to help users
 vscode:
