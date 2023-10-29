@@ -1,0 +1,387 @@
+
+## Quality Control Tutorial
+
+Within this tutorial we will
+
+- get familiar with the command line, running the intial and final step of the RNA-seq pipeline.
+-   run ``fastqc of some NGS files to learn to understand the output.
+-   **Optional:** run``trimmomatic` and/or `sortmern`` to test some parameter and prepare the NGS file for the next exercises.
+
+
+## Format
+
+This is meant as a group work. We have tried to create groups with mixed skills so that you
+can help each other. The idea is that those of you more familiar with the environment will
+hone their skills by helping others which are less familiar.
+
+This is of course just a suggestion and you are free to do as you like. If you decide to try, a
+possibly good format is for one of you to share the screen, you can take advantage of the
+whiteboard / marking capabilities of Zoom to then communicate by more than just talking.
+
+
+## Data
+
+Time series of the induction of human regulatory T cells (Tregs)
+
+The dataset is available at the European Nucleotide Archive (ENA) under the accession: [PRJNA369563](https://www.ebi.ac.uk/ena/browser/view/PRJNA369563){.external target="_blank"}. 
+
+## Choose your adventure:
+
+From here on the exercises will differ slightly depending on if you run them on Uppmax, or on Gitpod. Please select the tab that applies:
+
+::::: {.panel-tabset}
+## UPPMAX
+
+This is a modified and more verbose version of the exercises as linked to from this courses' [homepage](http://natstreet.upsc.se:3000/materials/Exercises/W2Day1/W2Day1-group-work.pdf){.external target="_blank"}. 
+
+### Screen
+
+Screen or GNU Screen is a terminal multiplexer. In other words, it means that you can start a screen session and then open any number of windows (virtual terminals) inside that session. Processes running in Screen will continue to run when their window is not visible even if you get disconnected.
+
+Start a named session
+
+```{.bash}
+screen -S fastqc
+```
+
+Detach from Linux Screen Session
+
+You can detach from the screen session at any time by typing:
+
+```{.bash}
+Ctrl + a d
+```
+
+Reattach to a Linux Screen
+
+To find the session ID list the current running screen sessions with:
+
+```{.bash}
+screen -ls
+```
+
+To resume your screen session use the following command:
+
+```{.bash}
+screen -r name
+```
+
+
+
+### Preparations
+
+Make a directory in your name in our storage project naiss2023-23-516
+
+<details>
+<summary>Solution: </summary>
+```{.bash}
+cd /proj/naiss2023-23-516
+mkdir your_name
+```
+</details>
+
+### FASTQC
+
+Fastqc is a simple tool to monitor the quality and the properties of a NGS sequencing file in fastq, SAM and BAM format. More information [here](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/){.external target="_blank"}
+
+We will check the quality of our RNAseq data set.
+
+Since we will create a lot of output, some we will use in a downstream analysis, I would recommend to get very well organized with a clear system of directories.
+
+Within your folder create a working directory for the analyses.
+
+<details>
+<summary>Solution: </summary>
+```{.bash}
+mkdir rnaseq
+```
+</details>
+
+Link the data from /proj/naiss2023-23-516/PRJNA369563/raw the following files to the directory. Look at the data.
+
+<details>
+<summary>Solution: </summary>
+```{.bash}
+cd rnaseq
+ln -s /proj/naiss2023-23-516/PRJNA369563/raw .
+ls -F
+```
+</details>
+
+What other flags for `ls` could be informative here?
+
+Within your folder create another directory for fastqc analyses.
+
+<details>
+<summary>Solution: </summary>
+```{.bash}
+mkdir -p qc/fastqc
+```
+</details>
+
+Now let's load the required tool:
+
+```{.bash}
+module load bioinfo-tools
+
+module load FastQC
+```
+
+#### run fastqc on a single file pair
+
+For each fastq file we can run the the quality control with the following command:
+
+srun - submit a job via the manager slurm
+
+Options:
+
+-   -A: project ID
+-   -t allocated time dd-hh:mm:ss
+-   -n number of cores (default is one)
+-   -p number of nodes (= 20 cores, not needed for us right now)
+
+```{.bash}
+
+srun -A naiss2023-22-1052 -t 30:00 -n 1  fastqc --noextract -o qc/fastqc raw/SRR5223499_1.fastq.gz  qc/fastqc raw/SRR5223499_2.fastq.gz
+```
+
+This works for one file, but it getting tedious for more than one file.
+
+#### run fastqc on several files in a bash script
+
+In your rnaseq folder, create a new directory called `scripts`, within this directory create a file called `fastqc.sh`
+
+<details>
+<summary>Solution: </summary>
+```{.bash}
+cd path/to/rnaseq folder
+mkdir scripts
+cd scripts
+nano fastqc.sh
+```
+</details>
+
+Copy the following into the file, and save the contents. Read through the file and try to understand what the different lines are doing.
+
+
+```{.bash}
+#! /bin/bash -l
+#SBATCH -A naiss2023-22-1052
+#SBATCH -t 30:00
+#SBATCH -n 1
+module load bioinfo-tools
+module load FastQC
+
+fastqc -o ../qc/fastqc --noextract ../raw/SRR5223499_1.fastq.gz ../raw/SRR5223499_2.fastq.gz
+```
+
+Submit the script to slurm:
+
+```{.bash}
+sbatch fastqc.sh
+```
+
+!! think about absolute versus relative paths!
+
+##### Check the status of your job on Uppmax
+
+```{.bash}
+jobinfo -u user-name
+```
+
+#### Look at output
+
+After running a bash script you will get a slurm output. Look at that output. See if you understand what that output contains.
+
+```{.bash}
+less slurm-XXXXX.out
+```
+
+##### fastqc output:
+
+Locate the output of FastQC. Tipp: which output directory did you specify in the
+
+For each fastq file you will get two output files:
+
+SRR5223499_1_fastqc.zip (report, data files and graphs) SRR5223499_1_fastqc.html (report in html)
+
+Let's download both files to the local computer for consulting.
+
+```{.bash}
+rsync -ah user@rackham.uppmax.uu.se:/proj/naiss2023-23-516/user/rnaseq/qc/fastqc .
+```
+
+### MultiQC
+
+```{.bash}
+module load MultiQC 
+
+mkdir multiqc 
+
+srun -A naiss2023-22-1052 -t 30:00 -n 1 multiqc -f -o multiqc .
+```
+
+
+## GITPOD
+
+Gitpod is a cloud development environment where users can access and use tools in a sandbox environment acessible in your browser, regardles of your operating system. 
+
+Here, I have installed the necessary tools necessary for todays exercises. 
+
+Getting started with gitpod:
+
+1) Create a github user for yourself and log in.
+2) Go to the repository https://github.com/amrei-bp/rnaseq-exercises.
+3) Click the button "open in gitpod". This will ask you to give permission from github.
+4) New workspace from above github repository.
+
+### Open this webpage in browser
+
+type in terminal
+```{.bash}
+gp prevew --external amrei-bp.github.io/rnaseq-exercises
+```
+
+:::{.callout-warning}
+Your gitpod session will go idle and close after a while. However, your work will be saved IF you work in the project directory `/workspace/rnaseq-exercises`. To access the instance again you need to click on the [dashboard](https://gitpod.io/workspaces){.external target="_blank"}. Move to the workspace you want to open, select the three vertical dots to the right and click "open". 
+:::
+ 
+
+### Preparations
+
+#### Download the data
+
+Navigate into `/workspace/rnaseq-exercises/raw`and execute the shell script `dowload_files.sh`.
+
+<details>
+<summary>Solution: </summary>
+```{.bash}
+cd /workspace/rnaseq-exercises/raw
+bash dowload_files.sh
+```
+</details>
+
+
+#### Prepare directories
+Make a directory with your name in the current workspace /workspace/rnaseq-exercises
+
+<details>
+<summary>Solution: </summary>
+```{.bash}
+pwd
+mkdir your_name
+```
+</details>
+
+### FASTQC
+
+Fastqc is a simple tool to monitor the quality and the properties of a NGS sequencing file in fastq, SAM and BAM format. More information [here](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/){.external target="_blank"}
+
+We will check the quality of our RNAseq data set.
+
+Since we will create a lot of output, some we will use in a downstream analysis, I would recommend to get very well organized with a clear system of directories.
+
+Within your folder create a working directory for the analyses.
+
+<details>
+<summary>Solution: </summary>
+```{.bash}
+mkdir rnaseq
+```
+</details>
+
+
+
+Within the rnaseq folder create another directory for fastqc analyses.
+
+<details>
+<summary>Solution: </summary>
+```{.bash}
+mkdir -p qc/fastqc
+```
+</details>
+
+Your directory should now look like this:`
+
+```{.bash}
+user
+└── rnaseq
+    └── fastqc
+```
+
+
+#### Run fastqc on a single file pair
+
+For each fastq file we can run the the quality control with the following command:
+
+```{.bash}
+fastqc --noextract -o . ../../../raw/SRR5223499_1.fastq.gz  ../../../raw/SRR5223499_2.fastq.gz
+```
+
+What are the options in this command, and what do they do?
+
+This works for one file, but it getting tedious for more than one file.
+
+#### Run fastqc on several files in a bash script
+
+In your rnaseq folder, create a new directory called `scripts`, within this directory create a file called `fastqc.sh`
+
+<details>
+<summary>Solution: </summary>
+```{.bash}
+cd ..
+mkdir scripts
+cd scripts
+nano fastqc.sh
+```
+</details>
+
+Copy the following into the file, and save the contents. Read through the file and try to understand what the different lines are doing.
+
+
+```{.bash}
+#! /bin/bash
+
+fastqc -o ../fastqc  --noextract ../../../raw/SRR5223499_1.fastq.gz ../../../raw/SRR5223499_2.fastq.gz
+```
+
+!! think about absolute versus relative paths!
+
+Submit your job via:
+
+```{.bash}
+bash fastqc.sh
+```
+
+This above is of course a bit useless, just redoing the analyses we have already run. How could we expand the script to run fastqc on more files?
+
+
+##### fastqc output:
+
+Locate the output of FastQC. Tipp: which output directory did you specify in the run command?
+
+For each fastq file you will get two output files:
+
+- SRR5223499_1_fastqc.zip (report, data files and graphs) 
+- SRR5223499_1_fastqc.html (report in html)
+
+
+Let's have a look at the output files:
+
+Right-click on the .html file in the explorer panel to the left. Select "Open With Live Server". 
+
+
+### MultiQC
+
+Multi-QC summarises the output of a lot of different tools. Only having run FastQC it might not seem powerful, but at the end of workflows it is really nice to have a program go through all the files and summarize them, saving you the hassle.
+
+```{.bash}
+multiqc -f -o ../multiqc .
+```
+
+### Optional: run more tools
+
+
+
+
+:::::
