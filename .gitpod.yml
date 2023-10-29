@@ -1,0 +1,18 @@
+---
+# Docker image definition: https://github.com/nf-core/tools/blob/master/nf_core/gitpod/gitpod.Dockerfile
+image: nfcore/gitpod:latest
+
+# Install extra bioinformatic tools with mamba
+tasks:
+  - name: Install RNAseq tools
+    command: |
+      mamba install -y fastqc trimmomatic sortmerna multiqc
+      mamba clean -y -a
+
+# Add vscode extensions to help users
+vscode:
+  extensions:
+    - quarto.quarto
+    - esbenp.prettier-vscode
+    - nextflow.nextflow
+    - ritwickdey.LiveServer
