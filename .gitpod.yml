@@ -1,3 +1,4 @@
+---
 # Docker image definition: https://github.com/nf-core/tools/blob/master/nf_core/gitpod/gitpod.Dockerfile
 image: nfcore/gitpod:latest
 
@@ -14,3 +15,4 @@ vscode:
     - quarto.quarto
     - esbenp.prettier-vscode
     - nextflow.nextflow
+    - ritwickdey.LiveServer
