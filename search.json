@@ -11,7 +11,7 @@
     "href": "index.html#quality-control-tutorial",
     "title": "",
     "section": "Quality Control Tutorial",
-    "text": "Quality Control Tutorial\nWithin this tutorial we will\n\nget familiar with the command line, running the intial and final step of the RNA-seq pipeline.\nrun ``fastqc of some NGS files to learn to understand the output.\nOptional: runtrimmomatic` and/or `sortmern to test some parameter and prepare the NGS file for the next exercises."
+    "text": "Quality Control Tutorial\nWithin this tutorial we will\n\nget familiar with the command line, running the intial and final step of the RNA-seq pipeline.\nrun fastqc of some NGS files to learn to understand the output.\nOptional: runtrimmomatic` and/or `sortmern to test some parameter and prepare the NGS file for the next exercises."
   },
   {
     "objectID": "index.html#format",
