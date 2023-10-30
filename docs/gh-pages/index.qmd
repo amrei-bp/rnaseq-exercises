@@ -4,8 +4,8 @@
 Within this tutorial we will
 
 - get familiar with the command line, running the intial and final step of the RNA-seq pipeline.
--   run `fastqc` of some NGS files to learn to understand the output.
--   **Optional:** run``trimmomatic` and/or `sortmern`` to test some parameter and prepare the NGS file for the next exercises.
+-   run `fastqc` on some NGS files to practice and to understand the output.
+-   **Optional:** run `trimmomatic` and/or `sortmerna` to test some parameter and prepare the NGS file for the next exercises.
 
 
 ## Format
@@ -21,7 +21,7 @@ whiteboard / marking capabilities of Zoom to then communicate by more than just 
 
 ## Data
 
-Time series of the induction of human regulatory T cells (Tregs)
+Time series of the induction of human regulatory T cells (Tregs).
 
 The dataset is available at the European Nucleotide Archive (ENA) under the accession: [PRJNA369563](https://www.ebi.ac.uk/ena/browser/view/PRJNA369563){.external target="_blank"}. 
 
