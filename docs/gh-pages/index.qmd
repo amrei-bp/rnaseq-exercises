@@ -4,7 +4,7 @@
 Within this tutorial we will
 
 - get familiar with the command line, running the intial and final step of the RNA-seq pipeline.
--   run ``fastqc of some NGS files to learn to understand the output.
+-   run `fastqc` of some NGS files to learn to understand the output.
 -   **Optional:** run``trimmomatic` and/or `sortmern`` to test some parameter and prepare the NGS file for the next exercises.
 
 
