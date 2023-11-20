@@ -2,4 +2,8 @@
 title: "About"
 ---
 
-About this site
+This is a tutorial to do basic quality control for RNAseq data. 
+
+Before this exercise the students will have worked through the software carpentry course on the [Unix shell](https://swcarpentry.github.io/shell-novice/).
+
+After this short exercise the students will be lead to run the [nf-core rnaseq pipeline](https://nf-co.re/rnaseq/3.13.1) for a full analysis of their data. 
